@@ -1,11 +1,11 @@
-require 'watir'
+require 'watir-webdriver'
 
 module VkBotty
   module Watir
     class BrowserBackend < ::VkBotty::BrowserBackend::Base
 
       attr_reader :browser
-      alias :b, :browser
+      alias :b :browser
 
       def initialize browser = nil
         @browser = browser || create_browser
@@ -58,7 +58,16 @@ module VkBotty
       end
 
       def create_browser
-        Watir::Browser.new :phantomjs
+        ::Watir::Browser.new :phantomjs
+      end
+
+      def debug_print
+        filename = "debug_print_#{rand.to_s[2..-1]}"
+        File.open("#{filename}.html", 'w'){|f| f.write browser.html.sub('windows-1251', 'utf-8')}
+        `lynx -dump #{filename}.html > #{filename}.txt`
+        puts File.open("#{filename}.txt").read
+        File.unlink "#{filename}.html"
+        File.unlink "#{filename}.txt"
       end
     end
 

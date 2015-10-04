@@ -19,7 +19,7 @@ module VkBotty
     end
 
     def to_s
-      "Bot<#{login}>"
+      "Bot<#{@login}>"
     end
 
     def login!
