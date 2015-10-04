@@ -47,6 +47,10 @@ module VkBotty
       # @return [String]
       attr_accessor :title
 
+      def initialize backend = nil
+        @backend = backend
+      end
+
       # parse page like private messaging area and parse messages
       # @return [Array<Message>]
       def messages
