@@ -10,5 +10,12 @@ module VkBotty
 
     # @return [User]
     attr_accessor :author
+
+    def self.create bot, text
+      m = Message.new
+      m.text = text
+      m.author = bot
+      m
+    end
   end
 end

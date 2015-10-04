@@ -1,6 +1,8 @@
 module VkBotty
-  class Group
-    attr_accessor :id
+  class Group < PublicationHost
+    def initialize *args
+      super
+    end
 
     # @return [Array<User>]
     def members

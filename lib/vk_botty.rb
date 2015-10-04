@@ -7,6 +7,7 @@ module VkBotty
   autoload :Message, 'vk_botty/message'
   autoload :Post, 'vk_botty/post'
   autoload :Comment, 'vk_botty/comment'
+  autoload :PublicationHost, 'vk_botty/publication_host'
 
   autoload :BrowserBackend, 'vk_botty/browser_backend'
 
