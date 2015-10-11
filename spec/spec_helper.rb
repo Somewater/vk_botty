@@ -8,7 +8,7 @@ accounts_filepath = File.join(File.dirname(__FILE__), '..', 'test_accounts.txt')
 if File.exist? accounts_filepath
   alise_login, alise_pass, bob_login, bob_pass =
       File.open(accounts_filepath) do |f|
-        f.each_line.to_a.take(2).map{|line| line.split(':').take(2) }.flatten
+        f.each_line.to_a.take(2).map{|line| line.split(':').take(2) }.flatten.map(&:strip)
       end
   RSpec.configure do |c|
     c.add_setting :alise_login, default: alise_login

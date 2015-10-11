@@ -4,19 +4,45 @@ module VkBotty
   module Watir
     class BrowserBackend < ::VkBotty::BrowserBackend::Base
 
+      attr_reader :logger
       attr_reader :browser
       alias :b :browser
 
-      def initialize browser = nil
+      def initialize browser = nil, logger = nil
         @browser = browser || create_browser
+        @logger = logger || begin
+          l = Logger.new(STDOUT)
+          l.progname = "Watir::BrowserBackend"
+          l.level = Logger::DEBUG
+          l
+        end
       end
 
       def login! login, password
         b.goto "https://vk.com"
+        logger.debug "Go to vk.com, title='#{b.title}'"
+
         b.text_field(:name, 'email').set(login)
         b.text_field(:name, 'pass').set(password)
         b.forms.first.submit
-        b.title =~ /vk\.com\/[\w\d\_]+/
+
+        attempts = 0
+
+        while attempts < 10
+          catch :check_login do
+            attempts += 1
+            logger.debug "Login to vk.com, title='#{b.title}', attempt #{attempts}"
+            val = b.table(id: 'myprofile_table').present?
+            unless val
+              logger.info "Sing in by login name #{login} unsuccessful, title #{b.title}"
+              if attempts < 5
+                # try to input required codes
+                login_with_phone_input!(login) if b.text.index('укажите все недостающие цифры номера телефона')
+              end
+            end
+            return val
+          end
+        end
       end
 
       # @return [Page#posts]
@@ -27,7 +53,6 @@ module VkBotty
                  "club#{user_or_group.id}"
                end
         b.goto "https://vk.com/#{name}"
-        require 'pry'; binding.pry
       end
 
       # url like https://vk.com/friends?id={user.id}&section=all or https://vk.com/friends (for current user)
@@ -68,6 +93,15 @@ module VkBotty
         puts File.open("#{filename}.txt").read
         File.unlink "#{filename}.html"
         File.unlink "#{filename}.txt"
+      end
+
+      # protected
+
+      def login_with_phone_input! login
+        logger.debug "Login with phone number input"
+        b.text_field(id: 'code').set(login[1..-3])
+        b.button(id: 'validate_btn').click
+        throw :check_login
       end
     end
 
