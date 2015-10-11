@@ -24,7 +24,11 @@ module VkBotty
 
         b.text_field(:name, 'email').set(login)
         b.text_field(:name, 'pass').set(password)
-        b.forms.first.submit
+        if b.button(:id, 'quick_login_button').present?
+          b.button(:id, 'quick_login_button').click
+        else
+          b.forms.first.submit
+        end
 
         attempts = 0
 
