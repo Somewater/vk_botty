@@ -93,6 +93,8 @@ module VkBotty
         puts File.open("#{filename}.txt").read
         File.unlink "#{filename}.html"
         File.unlink "#{filename}.txt"
+      rescue Errno::ENOENT
+        logger.warn "Lynx not found, install it with 'sudo apt-get install lynx'"
       end
 
       # protected
