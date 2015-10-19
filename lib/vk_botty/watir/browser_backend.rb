@@ -6,9 +6,13 @@ module VkBotty
 
       attr_reader :logger
       attr_reader :browser
+      attr_reader :captcha_recognizer
       alias :b :browser
 
-      def initialize browser = nil, logger = nil
+      # @param logger
+      # @param browser
+      # @param captcha_recognizer [#recognize(url)]
+      def initialize browser = nil, logger = nil, captcha_recognizer = nil
         @browser = browser || create_browser
         @logger = logger || begin
           l = Logger.new(STDOUT)
@@ -16,6 +20,7 @@ module VkBotty
           l.level = Logger::DEBUG
           l
         end
+        @captcha_recognizer = captcha_recognizer
       end
 
       def login! login, password
@@ -42,6 +47,7 @@ module VkBotty
               if attempts < 5
                 # try to input required codes
                 login_with_phone_input!(login) if b.text.index('укажите все недостающие цифры номера телефона')
+                login_with_captcha! if b.text.index('Введите код с картинки')
               end
             end
             return val
@@ -90,9 +96,10 @@ module VkBotty
         ::Watir::Browser.new :phantomjs
       end
 
-      def debug_print
+      def debug_print html = nil
+        html ||= browser.html.sub('windows-1251', 'utf-8')
         filename = "debug_print_#{rand.to_s[2..-1]}"
-        File.open("#{filename}.html", 'w'){|f| f.write browser.html.sub('windows-1251', 'utf-8')}
+        File.open("#{filename}.html", 'w'){|f| f.write html}
         `lynx -dump #{filename}.html > #{filename}.txt`
         puts File.open("#{filename}.txt").read
         File.unlink "#{filename}.html"
@@ -108,6 +115,21 @@ module VkBotty
         b.text_field(id: 'code').set(login[1..-3])
         b.button(id: 'validate_btn').click
         throw :check_login
+      end
+
+      def login_with_captcha!
+        if captcha_recognizer
+          logger.debug "Login with captcha"
+          url = b.div(class: 'captcha').img.src
+          value = captcha_recognizer.recognize(url)
+          logger.debug "Captcha from #{url} recognized as #{value}"
+          b.div(class: 'captcha').text_field(placeholder: 'Введите код сюда').set(value)
+          b.button(text: 'Отправить').click
+          throw :check_login
+        else
+          logger.debug "Captcha requested but recognizer not provided"
+          throw :check_login
+        end
       end
     end
 
