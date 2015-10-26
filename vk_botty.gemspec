@@ -9,18 +9,17 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Pavel Naydenov"]
   spec.email         = ["naydenov.p.v@gmail.com"]
 
-  if spec.respond_to?(:metadata)
-    spec.metadata['allowed_push_host'] = "TODO: Set to 'http://mygemserver.com' to prevent pushes to rubygems.org, or delete to allow pushes to any server."
-  end
-
-  spec.summary       = %q{TODO: Write a short summary, because Rubygems requires one.}
-  spec.description   = %q{TODO: Write a longer description or delete this line.}
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
+  spec.summary       = 'Vkontakte site adapter on Ruby'
+  spec.description   = <<-EOF
+VkBotty is a tool to write VKontakte bots and automate social actions.
+Library emulates user interaction directly through vk site using headless browser. It's not a Vkontakte API adapter.
+EOF
+  spec.homepage      = "https://github.com/Somewater/vk_botty"
   spec.license       = "MIT"
 
-  spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
-  spec.bindir        = "exe"
-  spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
+  spec.files         = `git ls-files`.split("\n")
+  spec.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
+  spec.executables   = []
   spec.require_paths = ["lib"]
 
   spec.add_runtime_dependency "watir", "~> 5.0.0"
