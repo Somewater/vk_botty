@@ -13,6 +13,9 @@ module VkBotty
     def posts
     end
 
+    def to_s
+      "Group<#{@id}>"
+    end
 
     class GroupUser < User
     end

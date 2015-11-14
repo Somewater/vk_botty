@@ -27,5 +27,9 @@ module VkBotty
     def messages_from user
       backend.messages_page(user).messages
     end
+
+    def to_s
+      "User<#{@id}>"
+    end
   end
 end

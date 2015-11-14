@@ -17,5 +17,9 @@ module VkBotty
       m.author = author
       m
     end
+
+    def to_s
+      "#{self.class.to_s}<author=#{author}, text=\"#{text[0..20]}\">"
+    end
   end
 end

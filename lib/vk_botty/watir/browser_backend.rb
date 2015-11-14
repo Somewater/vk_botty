@@ -165,12 +165,16 @@ module VkBotty
           author_id = div.a(class: 'author').attribute_value('data-from-id').to_i
           text = if div.div(class: 'wall_post_text').exist?
                    div.div(class: 'wall_post_text').inner_html
+                 else
+                   ''
                  end
           comments = div.divs(class: 'reply_table').map do |comment_div|
             comment_author_id = comment_div.a(class: 'author').attribute_value('data-from-id').to_i
             comment_text =
                 if comment_div.div(class: 'wall_reply_text').exist?
                   comment_div.div(class: 'wall_reply_text').inner_html
+                else
+                  ''
                 end
             VkBotty::Comment.create(bot.get_user(comment_author_id), comment_text)
           end
