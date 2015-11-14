@@ -167,7 +167,8 @@ module VkBotty
           text = if div.div(class: 'wall_post_text').present?
                    div.div(class: 'wall_post_text').inner_html
                  end
-          Post.create(bot.get_user(author_id), text)
+          comments = []
+          Post.new(bot.get_user(author_id), text, comments)
         end
       end
 
@@ -175,6 +176,18 @@ module VkBotty
       # @return [Array<User>]
       def users
         raise NotImplementedError
+      end
+    end
+
+    class Post < ::VkBotty::Post
+      def initialize author, text, comments
+        self.text = text
+        self.author = author
+        @comments = comments
+      end
+
+      def comments
+        @comments
       end
     end
   end

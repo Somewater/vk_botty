@@ -6,13 +6,7 @@ module VkBotty
 
     # @return [Array<Comment>]
     def comments
-    end
-
-    def self.create author, text
-      m = Post.new
-      m.text = text
-      m.author = author
-      m
+      raise NotImplementedError
     end
   end
 end
