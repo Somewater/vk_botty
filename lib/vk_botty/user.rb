@@ -1,8 +1,8 @@
 module VkBotty
   class User < PublicationHost
 
-    def initialize *args
-      super
+    def initialize backend
+      super(backend)
     end
 
     # @return [Array<User>]

@@ -40,15 +40,17 @@ module VkBotty
       end
     end
 
-    class Page
+    class  Page
       # @return [BrowserBackend]
-      attr_accessor :backend
+      attr_accessor :browser, :bot
+      alias :b :browser
 
       # @return [String]
       attr_accessor :title
 
-      def initialize backend = nil
-        @backend = backend
+      def initialize browser, bot
+        @browser = browser
+        @bot = bot
       end
 
       # parse page like private messaging area and parse messages

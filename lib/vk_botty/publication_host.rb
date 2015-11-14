@@ -7,8 +7,8 @@ module VkBotty
 
     attr_accessor :id
 
-    def initialize backend = nil
-      @backend = backend || Watir::BrowserBackend.new
+    def initialize backend
+      @backend = backend
     end
   end
 end

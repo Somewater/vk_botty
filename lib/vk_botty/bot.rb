@@ -10,12 +10,15 @@ module VkBotty
       @login = login
       @password = password
       @logged = false
+      backend ||= Watir::BrowserBackend.new(self)
       super(backend)
       @logger = logger || begin
         l = Logger.new(STDOUT)
         l.progname = "Bot<#{login}>"
         l
       end
+
+      @users = {} # Users storage, hash by uid
     end
 
     def to_s
@@ -25,6 +28,8 @@ module VkBotty
     def login!
       raise "Already logged" if @logged
       @logged = backend.login! @login, @password
+      @users[id] = self if @logged && id.to_i > 0
+      @logged
     end
 
     # @param user_or_group [User, Group]
@@ -57,9 +62,11 @@ module VkBotty
     # @param id [Fixnum]
     # @return [User]
     def get_user id
-      u = User.new(backend)
-      u.id = id
-      u
+      @users[id.to_i] ||= begin
+        u = User.new(backend)
+        u.id = id.to_i
+        u
+      end
     end
 
     # @param id [Fixnum]
@@ -68,6 +75,10 @@ module VkBotty
       g = Group.new(backend)
       g.id = id
       g
+    end
+
+    def id
+      backend.uid
     end
   end
 end

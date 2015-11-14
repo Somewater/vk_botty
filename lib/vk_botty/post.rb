@@ -8,10 +8,10 @@ module VkBotty
     def comments
     end
 
-    def self.create bot, text
+    def self.create author, text
       m = Post.new
       m.text = text
-      m.author = bot
+      m.author = author
       m
     end
   end

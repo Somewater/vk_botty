@@ -7,12 +7,17 @@ module VkBotty
       attr_reader :logger
       attr_reader :browser
       attr_reader :captcha_recognizer
+      attr_reader :bot
       alias :b :browser
+
+      # variables
+      attr_reader :uid
 
       # @param logger
       # @param browser
       # @param captcha_recognizer [#recognize(url)]
-      def initialize browser = nil, logger = nil, captcha_recognizer = nil
+      def initialize bot, browser = nil, logger = nil, captcha_recognizer = nil
+        @bot = bot
         @browser = browser || create_browser
         @logger = logger || begin
           l = Logger.new(STDOUT)
@@ -41,8 +46,8 @@ module VkBotty
           catch :check_login do
             attempts += 1
             logger.debug "Login to vk.com, title='#{b.title}', attempt #{attempts}"
-            val = b.table(id: 'myprofile_table').present?
-            unless val
+            success = b.table(id: 'myprofile_table').present?
+            unless success
               logger.info "Sing in by login name #{login} unsuccessful, title #{b.title}"
               if attempts < 5
                 # try to input required codes
@@ -50,7 +55,8 @@ module VkBotty
                 login_with_captcha! if b.text.index('Введите код с картинки')
               end
             end
-            return val
+            after_login if success
+            return success
           end
         end
       end
@@ -63,6 +69,7 @@ module VkBotty
                  "club#{user_or_group.id}"
                end
         b.goto "https://vk.com/#{name}"
+        Page.new(b, bot)
       end
 
       # url like https://vk.com/friends?id={user.id}&section=all or https://vk.com/friends (for current user)
@@ -97,7 +104,10 @@ module VkBotty
       end
 
       def debug_print html = nil
-        html ||= browser.html.sub('windows-1251', 'utf-8')
+        self.class.debug_print(html || browser.html)#.sub('windows-1251', 'utf-8'))
+      end
+
+      def self.debug_print html
         filename = "debug_print_#{rand.to_s[2..-1]}"
         File.open("#{filename}.html", 'w'){|f| f.write html}
         `lynx -dump #{filename}.html > #{filename}.txt`
@@ -131,9 +141,17 @@ module VkBotty
           throw :check_login
         end
       end
+
+      def after_login
+        @uid = b.execute_script("return window.vk.id").to_i
+      end
     end
 
     class Page < ::VkBotty::BrowserBackend::Page
+      def initialize(browser, bot)
+        super(browser, bot)
+      end
+
       # parse page like private messaging area and parse messages
       # @return [Array<Message>]
       def messages
@@ -143,7 +161,14 @@ module VkBotty
       # parse page like wall page (group or user) and parse posts and comments
       # @return [Array<Post>]exit
       def posts
-        raise NotImplementedError
+
+        b.div(id: 'page_wall_posts').divs(class: 'post_table').map do |div|
+          author_id = div.a(class: 'author').attribute_value('data-from-id').to_i
+          text = if div.div(class: 'wall_post_text').present?
+                   div.div(class: 'wall_post_text').inner_html
+                 end
+          Post.create(bot.get_user(author_id), text)
+        end
       end
 
       # parse page like list of friends and parse friends
