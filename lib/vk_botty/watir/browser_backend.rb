@@ -161,13 +161,19 @@ module VkBotty
       # parse page like wall page (group or user) and parse posts and comments
       # @return [Array<Post>]exit
       def posts
-
         b.div(id: 'page_wall_posts').divs(class: 'post_table').map do |div|
           author_id = div.a(class: 'author').attribute_value('data-from-id').to_i
-          text = if div.div(class: 'wall_post_text').present?
+          text = if div.div(class: 'wall_post_text').exist?
                    div.div(class: 'wall_post_text').inner_html
                  end
-          comments = []
+          comments = div.divs(class: 'reply_table').map do |comment_div|
+            comment_author_id = comment_div.a(class: 'author').attribute_value('data-from-id').to_i
+            comment_text =
+                if comment_div.div(class: 'wall_reply_text').exist?
+                  comment_div.div(class: 'wall_reply_text').inner_html
+                end
+            VkBotty::Comment.create(bot.get_user(comment_author_id), comment_text)
+          end
           Post.new(bot.get_user(author_id), text, comments)
         end
       end

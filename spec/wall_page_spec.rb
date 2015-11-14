@@ -17,7 +17,10 @@ describe "Load and parse wall pages" do
     expect(posts).not_to be_empty
     post = posts.first
     expect(post).to be_a(VkBotty::Post)
-    require 'pry'; binding.pry
+    expect(post.text).not_to be_empty
+    expect(
+      posts.any?{|p| !p.comments.empty? && p.comments.first.is_a?(VkBotty::Comment) }
+    ).to be_truthy
   end
 
   it "friend wall page" do

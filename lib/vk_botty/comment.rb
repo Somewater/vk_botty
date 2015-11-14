@@ -1,9 +1,9 @@
 module VkBotty
   class Comment < Message
-    def self.create bot, text
+    def self.create author, text
       m = Comment.new
       m.text = text
-      m.author = bot
+      m.author = author
       m
     end
   end
