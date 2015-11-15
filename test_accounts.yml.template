@@ -1,0 +1,12 @@
+users:
+  - name: alise
+    login: aliseLoginHere
+    password: alisePasswordHere
+    test_group:
+      id: groupIdHere
+      slug: groupSlugNameHere
+    test_friend:
+      id: aliseFriendHere # he can be bob
+  - name: bob
+    login: bobLoginHere
+    password: bobPasswordHere

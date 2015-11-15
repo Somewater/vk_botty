@@ -11,7 +11,7 @@ describe "Login" do
 
   it "Alice should not login with wrong password" do
     expect(
-      VkBotty::Bot.new(RSpec.configuration.alise_login, '12345').login!
+      VkBotty::Bot.new(RSpec.configuration.alise.login, '12345').login!
     ).to be_falsey
   end
 
