@@ -1,6 +1,11 @@
 require_relative 'spec_helper'
 
-# Alice account must have posts on wall page with some comments (from Alise and another user)
+# Alice account must have:
+# - posts on wall page with some comments (from Alise and another user)
+# - friends all with non empty wall page (wall page must have at least one post with comments)
+# - subscription to group in which Alise is a member (with at least one post with comments)
+# - subscription to group in which Alise is not a member (with at least one post with comments)
+
 
 describe "Load and parse wall pages" do
 
@@ -23,13 +28,15 @@ describe "Load and parse wall pages" do
     ).to be_truthy
   end
 
-  it "friend wall page" do
+  xit "friend wall page" do
+
   end
 
-  it "own group wall page" do
+  xit "own group wall page" do
+
   end
 
-  it "some group wall page" do
+  xit "some group wall page" do
 
   end
 end
